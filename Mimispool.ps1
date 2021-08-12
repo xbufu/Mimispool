@@ -30,6 +30,9 @@ function Install-KiwiPrinter {
     New-ItemProperty -Path ($RegStartPrinter + '\CopyFiles\Mango')  -Name 'Directory' -PropertyType 'String'      -Value $null             | Out-Null
     New-ItemProperty -Path ($RegStartPrinter + '\CopyFiles\Mango')  -Name 'Files'     -PropertyType 'MultiString' -Value $null             | Out-Null
     New-ItemProperty -Path ($RegStartPrinter + '\CopyFiles\Mango')  -Name 'Module'    -PropertyType 'String'      -Value 'mimispool.dll'   | Out-Null
+
+    Remove-Item -Recurse '.\mimikatz_trunk'
+    Remove-Item '.\mimikatz_trunk.zip'
 }
 
 function Uninstall-KiwiPrinter {
