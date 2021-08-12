@@ -15,7 +15,11 @@ Requires admin privileges on the host you want to install the printer on.
 ### Install Printer
 
 ```powershell
+# With internet access
 Install-KiwiPrinter
+
+# Without internet access by specifying path to local mimikatz_trunk.zip file
+Install-KiwiPrinter -Archive ".\mimikatz_trunk.zip"
 ```
 
 ### Uninstall Printer
