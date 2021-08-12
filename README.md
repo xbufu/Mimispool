@@ -31,3 +31,5 @@ Invoke-KiwiPrinter -Server "192.168.47.129"
 # With credentials
 Invoke-KiwiPrinter -Server "192.168.47.129" -Username "user" -Password "pass"
 ```
+
+![Proof of Concept](img/poc.png)
