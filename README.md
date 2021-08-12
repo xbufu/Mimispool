@@ -2,6 +2,8 @@
 
 Just a very small script to install, uninstall or connect to gentilwiki's Mimispool printer. Used to exploit the PrintNightmare vulnerability (CVE-2021-36958) for local privilege escalation. Tested on a fully up-to-date Windows 10 Enterprise Evaluation VM.
 
+Requires admin privileges on the host you want to install the printer on.
+
 ## Usage
 
 ### Import the Module
