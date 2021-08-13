@@ -61,13 +61,13 @@ function Uninstall-KiwiPrinter {
     $system32        = $env:systemroot + '\system32'
     $drivers         = $system32 + '\spool\drivers'
 
-    Remove-Printer       -Name $printerName
+    Remove-Printer       -Name $printerName -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 2
-    Remove-PrinterDriver -Name 'Generic / Text Only'
+    Remove-PrinterDriver -Name 'Generic / Text Only' -ErrorAction SilentlyContinue
 
-    Remove-Item -Force -Path ($drivers  + '\x64\3\mimispool.dll')
-    Remove-Item -Force -Path ($drivers  + '\W32X86\3\mimispool.dll')
-    Remove-Item -Force -Path ($system32 + '\mimispool.dll')
+    Remove-Item -Force -Path ($drivers  + '\x64\3\mimispool.dll') -ErrorAction SilentlyContinue
+    Remove-Item -Force -Path ($drivers  + '\W32X86\3\mimispool.dll') -ErrorAction SilentlyContinue
+    Remove-Item -Force -Path ($system32 + '\mimispool.dll') -ErrorAction SilentlyContinue
 }
 
 function Invoke-KiwiPrinter {
@@ -102,6 +102,7 @@ function Invoke-KiwiPrinter {
     } 
 
     $driver = (Get-Printer -Name $fullprinterName).DriverName
-    Remove-Printer -Name $fullprinterName
-    Remove-PrinterDriver -Name $driver
+    Remove-Printer -Name $fullprinterName -ErrorAction SilentlyContinue
+    Remove-PrinterDriver -Name $driver -ErrorAction SilentlyContinue
+    Uninstall-KiwiPrinter
 }
